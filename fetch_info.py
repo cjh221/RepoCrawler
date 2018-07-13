@@ -40,7 +40,7 @@ def download_zip(zip_url):
     r = requests.get(zip_url, stream=True)
     if r.status_code == requests.codes.ok:
         #continue
-        print("Downloading file ... ", zip_url, end="")
+        print("Downloading file ... ", zip_url, "")
         with open(file_name, 'wb') as f:
             for chunk in r.iter_content(chunk_size=1024):
                 if chunk:
@@ -142,7 +142,7 @@ def get_servers(links):
 
 def print_info(domain):
     #General information
-    print(" General Information ".center(50, "="), end="\n")
+    print(" General Information ".center(50, "="), "\n")
     ip_addr = get_ipaddress(domain)
     host_company = get_hosting_info(domain)
     print("Site Name:".ljust(20), domain.ljust(20));
