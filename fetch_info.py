@@ -1,33 +1,43 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 #fetch.py
+
 #import library
 import requests
 import bs4
 import socket
 import argparse
-try:
-    from urllib.parse import urlparse
-except ImportError:
-    from urlparse import urlparse
+import datetime
 import whois
 import zipfile
 import os, time
 import threading
+import csv
+try:
+    from urllib.parse import urlparse
+except ImportError:
+    from urlparse import urlparse
+
+dt = datetime.datetime.now()
+result_now = '_'.join([str(dt.year), str(dt.month), str(dt.day), str(dt.hour), str(dt.minute)])
+result_now = 'result_' + result_now
+os.makedirs(result_now)
 
 servers = []
 netlocs = []
+
+#the sources with their valid website for the server logging
 ALL_SITES = ['tmdb', 'tadb', 'imdb', 'omdbapi', 'themoviedb', 'thetvdb', 'fanart']
 ALL_SITES_SERVER = {'tmdb': 'tmdb.com', 'tadb': 'tadb.com', 'imdb': 'imdb.com',
     'omdbapi':'omdbapi.com', 'themoviedb':'themoviedb.org', 'thetvdb': 'thetvdb.com', 'fanart':'fanart.tv'}
 
-REPOS = ['https://github.com/xbmc/xbmc/tree/master/addons/',
-         'https://github.com/EmuZONE/xbmc.plugins/tree/master/zip',
-         'https://github.com/kodil/kodil/tree/master/repo/',
-         'https://github.com/xbmc/xbmc-rbp/tree/master/addons/',
-         'https://github.com/Yaser7440/repository.MG.Arabic/tree/master/zip/']
-
+#The github repository are added here.
+REPOS = [#'https://github.com/xbmc/xbmc/tree/master/addons/',
+         #'https://github.com/EmuZONE/xbmc.plugins/tree/master/zip',
+         'https://github.com/kodil/kodil/tree/master/repo/'
+         #'https://github.com/xbmc/xbmc-rbp/tree/master/addons/',
+         #'https://github.com/Yaser7440/repository.MG.Arabic/tree/master/zip/']
+         ]
 """
     def matches(s):
     if re.findall(r'(?i)\b((?:[a-z][\w-]+:(?:/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?«»“”‘’]))', s):
@@ -40,7 +50,6 @@ REPOS = ['https://github.com/xbmc/xbmc/tree/master/addons/',
 #r'(?i)\b((?:[a-z][\w-]+:(?:/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))'
 
 #re.findall('https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+', url)
-#a Source sites are found in an xml file.
 
 #https://github.com/EmuZONE/xbmc.plugins/tree/master/zip
 #jso = soup.find_all('a', class_='js-navigation-open')
@@ -54,7 +63,7 @@ DB = ['']
 
 
 def download_zip(zip_url):
-    #if not a valid zip, just tell
+    #if not a valid zip
     if zip_url[-4:] != '.zip':
         print('A valid zip file is required')
         exit(0)
@@ -74,12 +83,12 @@ def download_zip(zip_url):
 
 print("  DONE.")
 #return the file name
-    return file_name
+return file_name
 
 
 def extract_zip(file_name):
     zip_f = zipfile.ZipFile(file_name, 'r')
-    #Create a random directory
+    #create a random directory
     random_dir = str(time.time())[:10]
     print("Creating Random Directory to hold content -- > ", random_dir)
     os.makedirs(random_dir)
@@ -113,7 +122,7 @@ def search_xml(dir_name):
 
 
 def xml_extract_link(xml_file):
-    #Parse our files.
+    #parse files.
     print('Parsing ', xml_file, '...')
     xml_data = open(xml_file).read()
     soup = bs4.BeautifulSoup(xml_data, 'lxml')
@@ -144,16 +153,14 @@ def is_repo_xml(url):
                 dir_name = extract_zip(zip_name)
                 xml_files = search_xml(dir_name)
                 if len(xml_files):
-                    #Another repo file found, exit
                     return True
                 else:
                     return False
+                else:
+                    print('site down.')
 
-else:
-    print('site down.')
-
-def log_link(data):
-    with open('log.dat', 'a+') as fp:
+def log_link(server, data):
+    with open(server+'_log.dat', 'a+') as fp:
         fp.write(data)
 
 def start_url(url):
@@ -206,13 +213,25 @@ def get_api_key_from_xml2(xml_file):
     api_len = 32
     hay = 'api_key='
     hay_len = len(hay)
-    xml_data = open(xml_file, encoding="UTF-8")
+    start = 0
+    xml_data = open(xml_file, encoding="UTF-8").read()
     end = len(xml_data)
+    cont = False
     if hay in xml_data:
-        i = xml_data.find(hay, start, end)
-        api_key = output[i+hay_len:i+hay_len+api_len]
-        if api_key not in apis:
-            apis.append(api_key)
+        while 1:
+            if cont:
+                break
+            #let's further, there's an api key available
+            i = xml_data.find(hay, start)
+            #print("DEbug: i +> ", i)
+            if i ==  -1:
+                break
+            api_key = xml_data[i+hay_len:i+hay_len+api_len]
+            #print("APIKEY: ", api_key)
+            #api_key = output[i+hay_len:i+hay_len+api_len]
+            if api_key not in apis:
+                apis.append(api_key)
+            start = i + hay_len + api_len + 1
     return apis
 
 def get_description_data(xml_file):
@@ -239,7 +258,7 @@ def get_sites(data):
 def download_github_zip(url):
     #before making the request, get it raw
     #file_name = ''
-    url = url.replace('blob', 'raw')
+    url = url.replace('tree', 'raw')
     
     file_name = download_zip(url)
     
@@ -319,7 +338,7 @@ def get_github_file_names(url, type_):
     files = get_github_ls(url)
     for file in files:
         if file.endswith(type_):
-            #type found
+            #we found our type
             all_files.append(file)
 
 return all_files
@@ -332,10 +351,10 @@ def github_path(url, fd_name):
         return url + '/' + fd_name
 
 def log_apis(apis, site_name):
-    with open(site_name+'_keys.csv', 'w') as fp:
-        writer = csv.writer(f)
+    with open(os.path.join(result_now, site_name+'_keys.csv'), 'a') as fp:
+        writer = csv.writer(fp)
         for api in apis:
-            writer.writerow(api)
+            writer.writerow([api])
 
 def ls_repo():
     pass
@@ -413,26 +432,81 @@ def get_asn(query):
 
 def print_info(domain):
     #General information
-    print(" General Information ".center(50, "="), end="\n")
-    ip_addr = get_ipaddress(domain)
-    host_company = get_hosting_info(domain)
-    print("Site Name:".ljust(20), domain.ljust(20));
-    print("IP Address:".ljust(20), ip_addr.ljust(20));
-    print("Hosting Provider:".ljust(20), str(host_company).ljust(20))
-    print("")
-    
-    #GEO information
-    print(" Geographical Information ".center(50, "="))
-    print("")
-    for tpl in get_geo_info(ip_addr):
-        print(tpl[0].rjust(20), tpl[1].ljust(20));
-    print("")
+    #we will be printing two times, one for log and one for stdout
+    file = os.path.join(result_now, domain + '_log.dat')
+    with open(file) as f:
+        print(" General Information ".center(50, "="), file=f, end="\n")
+        print(" General Information ".center(50, "="), end="\n")
+        
+        ip_addr = get_ipaddress(domain)
+        host_company = get_hosting_info(domain)
+        
+        print("Site Name:".ljust(20), domain.ljust(20));
+        print("Site Name:".ljust(20), domain.ljust(20), file=f);
+        
+        print("IP Address:".ljust(20), ip_addr.ljust(20))
+        print("IP Address:".ljust(20), ip_addr.ljust(20), file=f)
+        
+        print("Hosting Provider:".ljust(20), str(host_company).ljust(20))
+        print("Hosting Provider:".ljust(20), str(host_company).ljust(20), file=f)
+        print("")
+        
+        #GEO information
+        print(" Geographical Information ".center(50, "="))
+        print(" Geographical Information ".center(50, "="), file=f)
+        print("")
+        
+        for tpl in get_geo_info(ip_addr):
+            print(tpl[0].rjust(20), tpl[1].ljust(20))
+            print(tpl[0].rjust(20), tpl[1].ljust(20), file=f)
+        print("")
+        
+        #ASN information
+        print(" ASN ".center(50, "="))
+        asns = get_asn(ip_addr)
+        for x in asns:
+            print(x)
+            print(x, file=f)
 
-#ASN information
-print(" ASN ".center(50, "="))
-    asns = get_asn(ip_addr)
-    for x in asns:
-        print(x)
+def hunt_zip(zip_file_name, site_name):
+    print("\nHunting {} ...".format(zip_file_name))
+    xml_files = []
+    #print('Extracting zip file :: ', zip_file)
+    dir_name = extract_zip(zip_file_name)
+    
+    print("\tSearching for XML Files in  {}".format(zip_file_name))
+    for r, d, f in os.walk(dir_name):
+        #print(r, d, f)
+        for file in f:
+            if file[-4:] == '.xml':
+                print("\tFound a XML File --> ", file)
+                xml_files.append(os.path.join(r, file))
+    #print(xml_files)
+
+for xml_file_name in xml_files:
+    #lets parse our files.
+    apis = get_api_key_from_xml2(xml_file_name)
+    if len(apis):
+        log_apis(apis, site_name)
+        print("DEBUG: APIS +> ", apis)
+        print("Found {0} in {1}".format(len(apis), xml_file_name))
+        #delete the xml file
+        os.unlink(xml_file_name)
+        time.sleep(1)
+    
+    
+    destroy_dir(dir_name)
+
+def destroy_dir(dirs):
+    for fd in os.listdir(dirs):
+        file_path = os.path.join(dirs, fd)
+        try:
+            if o.path.isfile(file_path):
+                os.unlink(file_path)
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)
+        except:
+            print('could not remove directory, proceeding...')
 
 def start(start_zip):
     START_ZIP = start_zip
@@ -444,7 +518,7 @@ def start(start_zip):
             xml_links = xml_extract_link(xml_file)
             for l in xml_links:
                 #start a thread for each url
-                #enter the url and extract sites.
+                #enter the url and extact sites.
                 l = l + "addons.xml"
                 print("Following ", l)
                 #check if the xml exists
@@ -459,11 +533,11 @@ def start(start_zip):
                     print('Source Servers found:')
                     for site in sites:
                         print(site)
-                
-                    print('Logging server information:')
-                    #for site in sites:
-                    #print_info(ALL_SITES_SERVER[site])
                     
+                    print('Logging server information:')
+                    for site in sites:
+                        print_info(ALL_SITES_SERVER[site])
+                
                     print("Fetching keys ...")
                     
                     for repo in REPOS:
@@ -483,25 +557,39 @@ def start(start_zip):
                                             print("Looking in ", xml_file)
                                             xml_file_name = download_github_xml(repo + meta + "/" + xml_file)
                                             time.sleep(0.5)
-                                            apis = get_api_key_from_xml(xml_file_name)
+                                            apis = get_api_key_from_xml2(xml_file_name)
                                             if len(apis):
                                                 log_apis(apis, site)
+                                                print("DEBUG: APIS +> ", apis)
                                             print("Found {0} in {1}".format(len(apis), xml_file_name))
-                                            time.sleep(1)
+                                            #delete the xml file
+                                            os.unlink(xml_file_name)
+                                        time.sleep(1)
                                         print('searching zip files ...')
                                         zip_files = get_github_file_names(repo + meta + "/", "zip")
                                         if len(zip_files):
                                             for zip_file in zip_files:
                                                 print("Looking in ", zip_file)
-                                    #zip_file_name = download_github_zip(repo + meta + "/" + zip_file)
-                                    else:
-                                        pass
+                                                zip_file_name = download_github_zip(repo + meta + "/" + zip_file)
+                                                hunt_zip(zip_file_name, site)
+                                    
+                                        else:
+                                            pass
 
 
 
-#sites will list what to look for in git repo.
+#sites will contain what to lookup in the git repo.
 
 #START_ZIP = 'http://repo.mrblamo.xyz/repository.universalscrapers-1.0.0.zip'
-START_ZIP = 'Http://www.tantrumtv.com/download/repository.tantrumtv-1.2.3.zip'
+#START_ZIP = 'Http://www.tantrumtv.com/download/repository.tantrumtv-1.2.3.zip'
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="Get Information about site")
+    #group = parser.add_mutually_exclusive_group()
+    #group.add_argument("-d", "--domain", dest="domain", help="Domain name to be looked up")
+    parser.add_argument("-z", "--zipfile", dest="zip_url", help="The Zip file to be downloaded and scraped")
+    #group.add_argument("-r", "--zipdir", dest="zip_dir", help="The directory in which the zip files are contained")
+    args = parser.parse_args()
 
-start(START_ZIP)
+if args.zip_url:
+    START_ZIP = args.zip_url
+    start(START_ZIP)
