@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #fetch.py
 
@@ -26,7 +26,7 @@ os.makedirs(result_now)
 servers = []
 netlocs = []
 
-#the sources with their valid website for the server logging
+#the servers are added here but with their valid website for the server logging
 ALL_SITES = ['tmdb', 'tadb', 'imdb', 'omdbapi', 'themoviedb', 'thetvdb', 'fanart']
 ALL_SITES_SERVER = {'tmdb': 'tmdb.com', 'tadb': 'tadb.com', 'imdb': 'imdb.com',
     'omdbapi':'omdbapi.com', 'themoviedb':'themoviedb.org', 'thetvdb': 'thetvdb.com', 'fanart':'fanart.tv'}
@@ -63,7 +63,7 @@ DB = ['']
 
 
 def download_zip(zip_url):
-    #if not a valid zip
+    #if not a valid zip, just tell us
     if zip_url[-4:] != '.zip':
         print('A valid zip file is required')
         exit(0)
@@ -73,7 +73,7 @@ def download_zip(zip_url):
     #download the file
     r = requests.get(zip_url, stream=True)
     if r.status_code == requests.codes.ok:
-        #continue
+        #continue, we are ok
         print("Downloading file ... ", zip_url, end="")
         #write the data to file
         with open(file_name, 'wb') as f:
@@ -88,7 +88,7 @@ return file_name
 
 def extract_zip(file_name):
     zip_f = zipfile.ZipFile(file_name, 'r')
-    #create a random directory
+    #maybe i should create a random directory
     random_dir = str(time.time())[:10]
     print("Creating Random Directory to hold content -- > ", random_dir)
     os.makedirs(random_dir)
@@ -122,7 +122,7 @@ def search_xml(dir_name):
 
 
 def xml_extract_link(xml_file):
-    #parse files.
+    #lets parse our files.
     print('Parsing ', xml_file, '...')
     xml_data = open(xml_file).read()
     soup = bs4.BeautifulSoup(xml_data, 'lxml')
@@ -153,9 +153,11 @@ def is_repo_xml(url):
                 dir_name = extract_zip(zip_name)
                 xml_files = search_xml(dir_name)
                 if len(xml_files):
+                    #we found another repo file, let's exit
                     return True
                 else:
                     return False
+
                 else:
                     print('site down.')
 
@@ -383,7 +385,8 @@ def get_hosting_info(domain):
     except whois.parser.PywhoisError:
         print("No hosting information available.")
         return 'NOT AVAILABLE'
-
+    except socket.timeout:
+        print('Host Time out...skipping ...')
 def get_ipaddress(domain):
     #o = urlparse(domain)
     return socket.gethostbyname(domain)
@@ -433,12 +436,21 @@ def get_asn(query):
 def print_info(domain):
     #General information
     #we will be printing two times, one for log and one for stdout
-    file = os.path.join(result_now, domain + '_log.dat')
-    with open(file) as f:
-        print(" General Information ".center(50, "="), file=f, end="\n")
-        print(" General Information ".center(50, "="), end="\n")
-        
-        ip_addr = get_ipaddress(domain)
+    print("Fetching info for ", domain)
+    if domain.startswith('https://'):
+        dmn = domain[8:]
+    elif domain.startswith('http://'):
+        dmn = domain[7:]
+    else:
+        dmn = domain
+    print('... ', dmn)
+
+file = os.path.join(result_now, dmn + '_log.dat')
+with open(file, 'w') as f:
+    print(" General Information ".center(50, "="), file=f, end="\n")
+    print(" General Information ".center(50, "="), end="\n")
+    
+    ip_addr = get_ipaddress(dmn)
         host_company = get_hosting_info(domain)
         
         print("Site Name:".ljust(20), domain.ljust(20));
@@ -572,7 +584,7 @@ def start(start_zip):
                                                 print("Looking in ", zip_file)
                                                 zip_file_name = download_github_zip(repo + meta + "/" + zip_file)
                                                 hunt_zip(zip_file_name, site)
-                                    
+                                        
                                         else:
                                             pass
 
@@ -590,6 +602,11 @@ if __name__ == '__main__':
     #group.add_argument("-r", "--zipdir", dest="zip_dir", help="The directory in which the zip files are contained")
     args = parser.parse_args()
 
+#for test purpose only
 if args.zip_url:
+    
     START_ZIP = args.zip_url
+    get_servers([START_ZIP])
+    for server in servers:
+        print_info(server)
     start(START_ZIP)
