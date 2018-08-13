@@ -80,10 +80,9 @@ def download_zip(zip_url):
             for chunk in r.iter_content(chunk_size=1024):
                 if chunk:
                     f.write(chunk)
-
-print("  DONE.")
-#return the file name
-return file_name
+        print("  DONE.")
+    #return the file name
+    return file_name
 
 
 def extract_zip(file_name):
@@ -107,8 +106,7 @@ def search_links(data):
         if link_url is not None: # and link_url.startswith('http'):
             links.append(link_url)
     #print(link_url)
-
-return links
+    return links
 
 
 def search_xml(dir_name):
@@ -157,9 +155,8 @@ def is_repo_xml(url):
                     return True
                 else:
                     return False
-
-                else:
-                    print('site down.')
+            else:
+                print('site down.')
 
 def log_link(server, data):
     with open(server+'_log.dat', 'a+') as fp:
@@ -300,9 +297,8 @@ def download_github_xml(url):
             file_name = url.split("/")[-1]
             with open(file_name, 'wb') as fp:
                 fp.write(r.text.encode('utf-8'))
-
-#return the file name
-return file_name
+    #return the file name
+    return file_name
 
 
 def get_github_dir(url):
@@ -342,8 +338,7 @@ def get_github_file_names(url, type_):
         if file.endswith(type_):
             #we found our type
             all_files.append(file)
-
-return all_files
+    return all_files
 
 
 def github_path(url, fd_name):
@@ -451,34 +446,34 @@ with open(file, 'w') as f:
     print(" General Information ".center(50, "="), end="\n")
     
     ip_addr = get_ipaddress(dmn)
-        host_company = get_hosting_info(domain)
+    host_company = get_hosting_info(domain)
         
-        print("Site Name:".ljust(20), domain.ljust(20));
-        print("Site Name:".ljust(20), domain.ljust(20), file=f);
+    print("Site Name:".ljust(20), domain.ljust(20));
+    print("Site Name:".ljust(20), domain.ljust(20), file=f);
         
-        print("IP Address:".ljust(20), ip_addr.ljust(20))
-        print("IP Address:".ljust(20), ip_addr.ljust(20), file=f)
+    print("IP Address:".ljust(20), ip_addr.ljust(20))
+    print("IP Address:".ljust(20), ip_addr.ljust(20), file=f)
         
-        print("Hosting Provider:".ljust(20), str(host_company).ljust(20))
-        print("Hosting Provider:".ljust(20), str(host_company).ljust(20), file=f)
-        print("")
+    print("Hosting Provider:".ljust(20), str(host_company).ljust(20))
+    print("Hosting Provider:".ljust(20), str(host_company).ljust(20), file=f)
+    print("")
         
-        #GEO information
-        print(" Geographical Information ".center(50, "="))
-        print(" Geographical Information ".center(50, "="), file=f)
-        print("")
+    #GEO information
+    print(" Geographical Information ".center(50, "="))
+    print(" Geographical Information ".center(50, "="), file=f)
+    print("")
         
-        for tpl in get_geo_info(ip_addr):
-            print(tpl[0].rjust(20), tpl[1].ljust(20))
-            print(tpl[0].rjust(20), tpl[1].ljust(20), file=f)
-        print("")
+    for tpl in get_geo_info(ip_addr):
+        print(tpl[0].rjust(20), tpl[1].ljust(20))
+        print(tpl[0].rjust(20), tpl[1].ljust(20), file=f)
+    print("")
         
-        #ASN information
-        print(" ASN ".center(50, "="))
-        asns = get_asn(ip_addr)
-        for x in asns:
-            print(x)
-            print(x, file=f)
+    #ASN information
+    print(" ASN ".center(50, "="))
+    asns = get_asn(ip_addr)
+    for x in asns:
+        print(x)
+        print(x, file=f)
 
 def hunt_zip(zip_file_name, site_name):
     print("\nHunting {} ...".format(zip_file_name))
@@ -564,18 +559,18 @@ def start(start_zip):
                                     print('searching xml files ...')
                                     #get xml files in the metadata
                                     xml_files = get_github_file_names(repo + meta + "/", 'xml')
-                                        time.sleep(1)
-                                        for xml_file in xml_files:
-                                            print("Looking in ", xml_file)
-                                            xml_file_name = download_github_xml(repo + meta + "/" + xml_file)
-                                            time.sleep(0.5)
-                                            apis = get_api_key_from_xml2(xml_file_name)
-                                            if len(apis):
-                                                log_apis(apis, site)
-                                                print("DEBUG: APIS +> ", apis)
-                                            print("Found {0} in {1}".format(len(apis), xml_file_name))
-                                            #delete the xml file
-                                            os.unlink(xml_file_name)
+                                    time.sleep(1)
+                                    for xml_file in xml_files:
+                                        print("Looking in ", xml_file)
+                                        xml_file_name = download_github_xml(repo + meta + "/" + xml_file)
+                                        time.sleep(0.5)
+                                        apis = get_api_key_from_xml2(xml_file_name)
+                                        if len(apis):
+                                            log_apis(apis, site)
+                                            print("DEBUG: APIS +> ", apis)
+                                        print("Found {0} in {1}".format(len(apis), xml_file_name))
+                                        #delete the xml file
+                                        os.unlink(xml_file_name)
                                         time.sleep(1)
                                         print('searching zip files ...')
                                         zip_files = get_github_file_names(repo + meta + "/", "zip")
