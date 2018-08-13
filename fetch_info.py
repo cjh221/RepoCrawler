@@ -27,7 +27,7 @@ servers = []
 netlocs = []
 
 #the servers are added here but with their valid website for the server logging
-ALL_SITES = ['tmdb', 'tadb', 'imdb', 'omdbapi', 'themoviedb', 'thetvdb', 'fanart']
+ALL_SITES = ['tmdb', 'tadb', 'imdb', 'omdbapi', 'themoviedb', 'thetvdb', 'fanart', '123movies', 'vexmovies', 'gorillavids']
 ALL_SITES_SERVER = {'tmdb': 'tmdb.com', 'tadb': 'tadb.com', 'imdb': 'imdb.com',
     'omdbapi':'omdbapi.com', 'themoviedb':'themoviedb.org', 'thetvdb': 'thetvdb.com', 'fanart':'fanart.tv'}
 
