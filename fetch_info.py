@@ -67,14 +67,14 @@ def download_zip(zip_url):
     if zip_url[-4:] != '.zip':
         print('A valid zip file is required')
         exit(0)
-
+    
     #split the file from the url
     file_name = zip_url.split("/")[-1]
     #download the file
     r = requests.get(zip_url, stream=True)
     if r.status_code == requests.codes.ok:
         #continue, we are ok
-        print("Downloading file ... ", zip_url, end="")
+        print("Downloading file ... ", zip_url, "")
         #write the data to file
         with open(file_name, 'wb') as f:
             for chunk in r.iter_content(chunk_size=1024):
@@ -447,33 +447,33 @@ with open(file, 'w') as f:
     
     ip_addr = get_ipaddress(dmn)
     host_company = get_hosting_info(domain)
-        
+    
     print("Site Name:".ljust(20), domain.ljust(20));
     print("Site Name:".ljust(20), domain.ljust(20), file=f);
-        
+    
     print("IP Address:".ljust(20), ip_addr.ljust(20))
     print("IP Address:".ljust(20), ip_addr.ljust(20), file=f)
-        
+    
     print("Hosting Provider:".ljust(20), str(host_company).ljust(20))
     print("Hosting Provider:".ljust(20), str(host_company).ljust(20), file=f)
     print("")
-        
+    
     #GEO information
     print(" Geographical Information ".center(50, "="))
     print(" Geographical Information ".center(50, "="), file=f)
     print("")
-        
+    
     for tpl in get_geo_info(ip_addr):
         print(tpl[0].rjust(20), tpl[1].ljust(20))
         print(tpl[0].rjust(20), tpl[1].ljust(20), file=f)
     print("")
-        
-    #ASN information
-    print(" ASN ".center(50, "="))
-    asns = get_asn(ip_addr)
-    for x in asns:
-        print(x)
-        print(x, file=f)
+
+#ASN information
+print(" ASN ".center(50, "="))
+asns = get_asn(ip_addr)
+for x in asns:
+    print(x)
+    print(x, file=f)
 
 def hunt_zip(zip_file_name, site_name):
     print("\nHunting {} ...".format(zip_file_name))
@@ -488,7 +488,7 @@ def hunt_zip(zip_file_name, site_name):
             if file[-4:] == '.xml':
                 print("\tFound a XML File --> ", file)
                 xml_files.append(os.path.join(r, file))
-    #print(xml_files)
+#print(xml_files)
 
 for xml_file_name in xml_files:
     #lets parse our files.
@@ -544,7 +544,7 @@ def start(start_zip):
                     print('Logging server information:')
                     for site in sites:
                         print_info(ALL_SITES_SERVER[site])
-                
+                    
                     print("Fetching keys ...")
                     
                     for repo in REPOS:
