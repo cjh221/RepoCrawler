@@ -63,7 +63,7 @@ DB = ['']
 
 
 def download_zip(zip_url):
-    #if not a valid zip, just tell us
+    #if not a valid zip, print
     if zip_url[-4:] != '.zip':
         print('A valid zip file is required')
         exit(0)
@@ -73,7 +73,7 @@ def download_zip(zip_url):
     #download the file
     r = requests.get(zip_url, stream=True)
     if r.status_code == requests.codes.ok:
-        #continue, we are ok
+        #continue
         print("Downloading file ... ", zip_url, "")
         #write the data to file
         with open(file_name, 'wb') as f:
@@ -87,13 +87,13 @@ def download_zip(zip_url):
 
 def extract_zip(file_name):
     zip_f = zipfile.ZipFile(file_name, 'r')
-    #maybe i should create a random directory
+    #create a random directory
     random_dir = str(time.time())[:10]
     print("Creating Random Directory to hold content -- > ", random_dir)
     os.makedirs(random_dir)
     zip_f.extractall(random_dir)
     zip_f.close()
-    #return the dir in which it was extracted.
+    #return the dir in which it was extracted
     return random_dir
 
 
@@ -119,7 +119,7 @@ def search_xml(dir_name):
 
 
 def xml_extract_link(xml_file):
-    #lets parse our files.
+    #parse files.
     print('Parsing ', xml_file, '...')
     xml_data = open(xml_file).read()
     soup = bs4.BeautifulSoup(xml_data, 'lxml')
@@ -137,7 +137,7 @@ def is_zip_link(url):
 
 
 def is_repo_xml(url):
-    #connect to the site, chekck for zip file, download, extract if no xml file , no repo
+    #connect to the site, check for zip file, download, extract if no xml file , not a repo
     links = []
     zip_count = 0
     r = requests.get(url)
@@ -150,7 +150,7 @@ def is_repo_xml(url):
                 dir_name = extract_zip(zip_name)
                 xml_files = search_xml(dir_name)
                 if len(xml_files):
-                    #we found another repo file, let's exit
+                    #another repo file found
                     return True
                 else:
                     return False
@@ -223,7 +223,7 @@ def get_api_key_from_xml2(xml_file):
         while 1:
             if cont:
                 break
-            #let's further, there's an api key available
+            #proceed further, there are api keys available
             i = xml_data.find(hay, start)
             #print("DEbug: i +> ", i)
             if i ==  -1:
@@ -343,7 +343,7 @@ def get_github_file_names(url, type_):
     files = get_github_ls(url)
     for file in files:
         if file.endswith(type_):
-            #we found our type
+            #type determined
             all_files.append(file)
     return all_files
 
@@ -573,7 +573,7 @@ def start(start_zip):
                                 if site in meta:
                                     print("Checking keys for {} in {}".format(site, meta))
                                     print('searching xml files ...')
-                                    #get xml files in the metadata
+                                    #get xml files from the metadata
                                     xml_files = get_github_file_names(repo + meta + "/", 'xml')
                                     time.sleep(1)
                                     for xml_file in xml_files:
@@ -600,7 +600,7 @@ def start(start_zip):
                                             pass
                                         
                                         
-#sites will contain what to lookup in the git repo.
+#sites will contain what metadata to lookup from the source git repos
 
 #START_ZIP = 'http://repo.mrblamo.xyz/repository.universalscrapers-1.0.0.zip'
 #START_ZIP = 'Http://www.tantrumtv.com/download/repository.tantrumtv-1.2.3.zip'
