@@ -97,7 +97,6 @@ def extract_zip(file_name):
     return random_dir
 
 
-
 def search_links(data):
     soup = bs4.BeautifulSoup(data, 'lxml')
     links = []
@@ -158,10 +157,12 @@ def is_repo_xml(url):
             else:
                 print('site down.')
 
+                
 def log_link(server, data):
     with open(server+'_log.dat', 'a+') as fp:
         fp.write(data)
 
+        
 def start_url(url):
     print('Scraping {}'.format(url), end="    ")
     r = requests.get(url)
@@ -190,6 +191,7 @@ def loop_xml(xml_list):
         """
     pass
 
+
 def get_api_key_from_xml(xml_file):
     apis = []
     api_len = 32
@@ -206,6 +208,7 @@ def get_api_key_from_xml(xml_file):
             if api_key not in apis:
                 apis.append(api_key)
     return apis
+
 
 def get_api_key_from_xml2(xml_file):
     apis = []
@@ -233,6 +236,7 @@ def get_api_key_from_xml2(xml_file):
             start = i + hay_len + api_len + 1
     return apis
 
+
 def get_description_data(xml_file):
     """ This extact description datas from
         xml file found in the zip repo
@@ -244,6 +248,7 @@ def get_description_data(xml_file):
         #if '.com' in desc_data:
         desc_arr.append(desc_data)
 
+        
 def get_sites(data):
     """pull out sites from data it's actually data from xml file,
         data gotten from get_description_data
@@ -253,6 +258,7 @@ def get_sites(data):
         if site in data:
             sites.append(site)
     return sites
+
 
 def download_github_zip(url):
     #before making the request, get it raw
@@ -316,6 +322,7 @@ def get_github_dir(url):
                         dirs.append(file_name)
     return dirs
 
+
 def get_github_ls(url):
     dirs = []
     r = requests.get(url)
@@ -347,12 +354,14 @@ def github_path(url, fd_name):
     else:
         return url + '/' + fd_name
 
+    
 def log_apis(apis, site_name):
     with open(os.path.join(result_now, site_name+'_keys.csv'), 'a') as fp:
         writer = csv.writer(fp)
         for api in apis:
             writer.writerow([api])
 
+            
 def ls_repo():
     pass
 
@@ -373,6 +382,7 @@ def get_servers(links):
             netlocs.append(netloc)
             servers.append("".join([o.scheme, "://", netloc]))
 
+            
 def get_hosting_info(domain):
     try:
         w = whois.whois(domain)
@@ -382,9 +392,12 @@ def get_hosting_info(domain):
         return 'NOT AVAILABLE'
     except socket.timeout:
         print('Host Time out...skipping ...')
+        
+        
 def get_ipaddress(domain):
     #o = urlparse(domain)
     return socket.gethostbyname(domain)
+
 
 def get_geo_info(ip_address):
     tool_url = 'https://www.ultratools.com/tools/geoIpResult'
@@ -475,6 +488,7 @@ for x in asns:
     print(x)
     print(x, file=f)
 
+    
 def hunt_zip(zip_file_name, site_name):
     print("\nHunting {} ...".format(zip_file_name))
     xml_files = []
@@ -504,6 +518,7 @@ for xml_file_name in xml_files:
     
     destroy_dir(dir_name)
 
+    
 def destroy_dir(dirs):
     for fd in os.listdir(dirs):
         file_path = os.path.join(dirs, fd)
@@ -515,6 +530,7 @@ def destroy_dir(dirs):
         except:
             print('could not remove directory, proceeding...')
 
+            
 def start(start_zip):
     START_ZIP = start_zip
     zip_name = download_zip(START_ZIP)
@@ -582,9 +598,8 @@ def start(start_zip):
                                         
                                         else:
                                             pass
-
-
-
+                                        
+                                        
 #sites will contain what to lookup in the git repo.
 
 #START_ZIP = 'http://repo.mrblamo.xyz/repository.universalscrapers-1.0.0.zip'
