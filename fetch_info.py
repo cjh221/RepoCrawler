@@ -29,7 +29,7 @@ netlocs = []
 #the servers are added here but with their valid website for the server logging
 ALL_SITES = ['tmdb', 'tadb', 'imdb', 'omdbapi', 'themoviedb', 'thetvdb', 'fanart', '123movies', 'vexmovies', 'gorillavid', 'openloadmovies', 'gomovies', 'vidzi', 'olpair', 'yesmovies', 'vshare', 'vidup', 'estream', 'vidlox', 'bigvid', 'vipbox', 'vidtodo']
 ALL_SITES_SERVER = {'tmdb': 'tmdb.com', 'tadb': 'tadb.com', 'imdb': 'imdb.com',
-    'omdbapi':'omdbapi.com', 'themoviedb':'themoviedb.org', 'thetvdb': 'thetvdb.com', 'fanart':'fanart.tv', '123movies':'123movies.cc', 'vexmovies':'vexmovies.org', 'gorillavid':'justwatch.com', 'openloadmovies':'openloadmovies.tv', 'gomovies':'gomovies.sc', 'vidzi':'watchfilms.me', 'olpair':'olpari.com', 'yesmovies':'yesmovies.to', 'vshare':'vshare.com', 'vidup':'viduppair.me', 'estreams':'estreams.tv', 'vidlox':'vidlox.me', 'bigvid':'bigvid.me', 'vipbox':'vipbox.live', 'vidtodo':'vidtodo.com'}
+    'omdbapi':'omdbapi.com', 'themoviedb':'themoviedb.org', 'thetvdb': 'thetvdb.com', 'fanart':'fanart.tv', '123movies':'123movies.cc', 'vexmovies':'vexmovies.org', 'gorillavid':'justwatch.com', 'openloadmovies':'openloadmovies.tv', 'gomovies':'gomovies.sc', 'vidzi':'watchfilms.me', 'olpair':'olpair.com', 'yesmovies':'yesmovies.to', 'vshare':'vshare.com', 'vidup':'viduppair.me', 'estreams':'estreams.tv', 'vidlox':'vidlox.me', 'bigvid':'bigvid.me', 'vipbox':'vipbox.live', 'vidtodo':'vidtodo.com'}
 
 #The github repository are added here.
 REPOS = [#'https://github.com/xbmc/xbmc/tree/master/addons/',
