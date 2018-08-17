@@ -41,7 +41,7 @@ ALL_SITES_SERVER = {'tmdb': 'tmdb.com', 'tadb': 'tadb.com', 'imdb': 'imdb.com',
 # The github repository are added here.
 REPOS = [  # 'https://github.com/xbmc/xbmc/tree/master/addons/',
     # 'https://github.com/EmuZONE/xbmc.plugins/tree/master/zip',
-    'https://github.com/kodil/kodil/tree/master/repo/'
+    # 'https://github.com/kodil/kodil/tree/master/repo/'
     # 'https://github.com/xbmc/xbmc-rbp/tree/master/addons/',
     # 'https://github.com/Yaser7440/repository.MG.Arabic/tree/master/zip/']
 ]
