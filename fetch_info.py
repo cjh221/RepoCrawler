@@ -476,12 +476,12 @@ def print_info(domain):
         print(tpl[0].rjust(20), tpl[1].ljust(20), f)
     print("")
 
-# ASN information
-print(" ASN ".center(50, "="))
-asns = get_asn(ip_addr)
-for x in asns:
-    print(x)
-    print(x, file)
+    # ASN information
+    print(" ASN ".center(50, "="))
+    asns = get_asn(ip_addr)
+    for x in asns:
+        print(x)
+        print(x, file)
 
 
 def hunt_zip(zip_file_name, site_name):
